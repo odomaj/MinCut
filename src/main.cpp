@@ -1,5 +1,5 @@
 #include "io/IO.h"
-#include "graph/Graph.h"
+#include "cut/Cut.h"
 
 #include <iostream>
 

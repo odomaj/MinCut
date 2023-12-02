@@ -143,3 +143,16 @@ bool Graph_t::addEdge(int source, int destination, int cost)
     }
     return it1 -> addEdge(&*it2, cost);
 }
+
+std::queue<Edge_t> Graph_t::bfs(Node_t* start, Node_t* end)
+{
+    std::queue<Edge_t> path;
+    std::list<Edge_t> edges = start -> getEdges();
+    Node_t* node;/*
+    while(!edges.empty() && )
+    {
+
+    }
+    */
+    return path;
+}
