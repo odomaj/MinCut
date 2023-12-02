@@ -24,6 +24,7 @@ class Node_t
     int getValue();
     bool addEdge(Node_t* node, int cost);
     std::list<Edge_t> getEdges();
+    void zeroizeEdges();
     private:
     int value;
     std::list<Edge_t> edges;

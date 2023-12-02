@@ -31,6 +31,19 @@ bool Node_t::addEdge(Node_t* node, int cost)
     return true;
 }
 
+std::list<Edge_t> Node_t::getEdges()
+{
+    return edges;
+}
+
+void Node_t::zeroizeEdges()
+{
+    for(auto it = edges.begin(); it != edges.end(); it++)
+    {
+        it -> cost = 0;
+    }
+}
+
 bool operator<(Node_t node1, Node_t node2)
 {
     return node1.getValue() < node2.getValue();

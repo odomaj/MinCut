@@ -8,6 +8,14 @@ Graph_t::Graph_t()
 
 }
 
+Graph_t::Graph_t(const Graph_t& graph)
+{
+    for(auto it = graph.nodes.begin(); it != graph.nodes.end(); it++)
+    {
+        nodes.push_back(*it);
+    }
+}
+
 bool Graph_t::deserialize(const std::string& graphvizString)
 {
     nodes.clear();
@@ -144,9 +152,9 @@ bool Graph_t::addEdge(int source, int destination, int cost)
     return it1 -> addEdge(&*it2, cost);
 }
 
-std::queue<Edge_t> Graph_t::bfs(Node_t* start, Node_t* end)
+std::list<Edge_t> Graph_t::bfs(Node_t* start, Node_t* end)
 {
-    std::queue<Edge_t> path;
+    std::list<Edge_t> path;
     std::list<Edge_t> edges = start -> getEdges();
     Node_t* node;/*
     while(!edges.empty() && )
@@ -155,4 +163,17 @@ std::queue<Edge_t> Graph_t::bfs(Node_t* start, Node_t* end)
     }
     */
     return path;
+}
+
+void Graph_t::clear()
+{
+    nodes.clear();
+}
+
+void Graph_t::zeroizeEdges()
+{
+    for(auto it = nodes.begin(); it != nodes.end(); it++)
+    {
+        it -> zeroizeEdges();
+    }
 }
