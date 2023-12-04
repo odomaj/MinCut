@@ -12,6 +12,14 @@ class Node_t;
 
 typedef struct
 {
+    Node_t* source;
+    Node_t* destination;
+    int cost;
+} CompleteEdge_t;
+
+
+typedef struct
+{
     Node_t* node;
     int cost;
 } Edge_t;
@@ -21,9 +29,13 @@ class Node_t
     public:
     Node_t();
     Node_t(int value_);
+    Node_t(Node_t* node);
     int getValue();
     bool addEdge(Node_t* node, int cost);
+    bool incrementEdge(Node_t* destination, int increment);
+    void updateEdge(Node_t* destination, int cost);
     std::list<Edge_t> getEdges();
+    std::list<CompleteEdge_t> getCompleteEdges(Node_t* self);
     void zeroizeEdges();
     private:
     int value;

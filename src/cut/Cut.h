@@ -22,7 +22,7 @@ class Cut
     Graph_t maxFlow;
     Graph_t currentFlow;
     Graph_t residual;
-    void generateResidual();
+    bool generateResidual();
 
 };
 
