@@ -52,7 +52,7 @@ class Graph_t
     int getLowestNode();
     std::list<int> getVertices();
     private:
-    std::list<Node_t> nodes;
+    std::list<Node_t*> nodes;
     bool generateVertexes(const std::string& digraph);
     bool generateEdges(const std::string& digraph);
     bool addEdge(CompleteEdge_t edge);

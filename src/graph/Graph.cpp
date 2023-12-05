@@ -12,7 +12,7 @@ Graph_t::Graph_t(Graph_t& graph)
 {
     for(auto it = graph.nodes.begin(); it != graph.nodes.end(); it++)
     {
-        nodes.push_back(Node_t(it -> getValue()));
+        nodes.push_back(new Node_t((*it) -> getValue()));
     }
 
     std::list<StaticEdge_t> edges = graph.getEdges();
@@ -94,7 +94,7 @@ bool Graph_t::generateVertexes(const std::string& digraph)
     int node;
     while(!(iss >> node).fail())
     {
-        nodes.push_back(Node_t(node));
+        nodes.push_back(new Node_t(node));
         while(iss.get() != ';')
         {
             if(iss.fail())
@@ -106,12 +106,12 @@ bool Graph_t::generateVertexes(const std::string& digraph)
     int maxValue = 0;
     for(auto it = nodes.begin(); it != nodes.end(); it++)
     {
-        if(it -> getValue() > maxValue)
+        if((*it) -> getValue() > maxValue)
         {
-            maxValue = it -> getValue();
+            maxValue = (*it) -> getValue();
         }
     }
-    nodes.push_back(Node_t(maxValue + 1));
+    nodes.push_back(new Node_t(maxValue + 1));
     return true;
 }
 
@@ -201,21 +201,21 @@ bool Graph_t::addEdge(CompleteEdge_t edge)
 {
     auto it1 = nodes.begin();
     auto it2 = nodes.begin();
-    while(it1 -> getValue() != edge.source -> getValue())
+    while((*it1) -> getValue() != edge.source -> getValue())
     {
         if(it1++ == nodes.end())
         {
             return false;
         }
     }
-    while(it2 -> getValue() != edge.destination -> getValue())
+    while((*it2) -> getValue() != edge.destination -> getValue())
     {
         if(it2++ == nodes.end())
         {
             return false;
         }
     }
-    return it1 -> addEdge(&*it2, edge.cost);
+    return (*it1) -> addEdge(*it2, edge.cost);
 }
 
 /*
@@ -229,26 +229,26 @@ bool Graph_t::incrementEdge(CompleteEdge_t edge, int increment)
 {
     auto it1 = nodes.begin();
     auto it2 = nodes.begin();
-    while(it1 -> getValue() != edge.source -> getValue())
+    while((*it1) -> getValue() != edge.source -> getValue())
     {
         if(it1++ == nodes.end())
         {
             return false;
         }
     }
-    while(it2 -> getValue() != edge.destination -> getValue())
+    while((*it2) -> getValue() != edge.destination -> getValue())
     {
         if(it2++ == nodes.end())
         {
             return false;
         }
     }
-    if(it1 -> incrementEdge(&*it2, increment))
+    if((*it1) -> incrementEdge(*it2, increment))
     {
         return true;
     }
-    int oldCost = it1 -> updateEdge(&*it1, 0);
-    it2 -> incrementEdge(&*it1, oldCost - increment);
+    int oldCost = (*it1) -> updateEdge(*it1, 0);
+    (*it2) -> incrementEdge(*it1, oldCost - increment);
     return true;
 }
 
@@ -263,26 +263,26 @@ bool Graph_t::incrementEdge(int source, int destination, int increment)
 {
     auto it1 = nodes.begin();
     auto it2 = nodes.begin();
-    while(it1 -> getValue() != source)
+    while((*it1) -> getValue() != source)
     {
         if(it1++ == nodes.end())
         {
             return false;
         }
     }
-    while(it2 -> getValue() != destination)
+    while((*it2) -> getValue() != destination)
     {
         if(it2++ == nodes.end())
         {
             return false;
         }
     }
-    if(it1 -> incrementEdge(&*it2, increment))
+    if((*it1) -> incrementEdge(*it2, increment))
     {
         return true;
     } 
-    int oldCost = it1 -> updateEdge(&*it1, 0);
-    it2 -> incrementEdge(&*it1, oldCost - increment);
+    int oldCost = (*it1) -> updateEdge(*it1, 0);
+    (*it2) -> incrementEdge(*it1, oldCost - increment);
     return true;
     
 }
@@ -350,18 +350,18 @@ bool Graph_t::updateEdge(int source, int destination, int value)
 */
 Path_t Graph_t::findSTPath()
 {
-    Node_t* max = &*nodes.begin();
-    Node_t* min = &*nodes.begin();
+    Node_t* max = *nodes.begin();
+    Node_t* min = *nodes.begin();
 
     for(auto it = nodes.begin(); it != nodes.end(); it++)
     {
-        if(it -> getValue() > max -> getValue())
+        if((*it) -> getValue() > max -> getValue())
         {
-            max = &*it;
+            max = *it;
         }
-        else if(it -> getValue() < min -> getValue())
+        else if((*it) -> getValue() < min -> getValue())
         {
-            min = &*it;
+            min = *it;
         }
     }
     std::list<CompleteEdge_t> edges = bfs(min, max);
@@ -382,17 +382,13 @@ Path_t Graph_t::findSTPath()
     path.vertices.push_back(edges.front().source -> getValue());
     for(auto it = edges.begin(); it != edges.end(); it++)
     {
-        std::cout << "blah\n";
         path.vertices.push_back(it -> destination -> getValue());
         if(it -> cost < path.flow)
         {
             path.flow = it -> cost;
         }
     }
-    for(auto it = path.vertices.begin(); it != path.vertices.end(); it++)
-    {
-        std::cout << *it << ' ';
-    }
+    
     return path;
 }
 
@@ -404,8 +400,8 @@ std::list<StaticEdge_t> Graph_t::getEdges()
     std::list<StaticEdge_t> edges;
     for(auto it = nodes.begin(); it != nodes.end(); it++)
     {
-        int nodeVal = it -> getValue();
-        std::list<Edge_t> nodesEdges = it -> getEdges();
+        int nodeVal = (*it) -> getValue();
+        std::list<Edge_t> nodesEdges = (*it) -> getEdges();
         for(auto it2 = nodesEdges.begin(); it2 != nodesEdges.end(); it2++)
         {
             StaticEdge_t edge;
@@ -431,22 +427,25 @@ std::list<CompleteEdge_t> Graph_t::bfs(Node_t* start, Node_t* end)
         edge.source = nullptr;
         edge.destination = nullptr;
         edge.cost = 0;
-        visited.insert({it -> getValue(), edge});
+        visited.insert({(*it) -> getValue(), edge});
     }
-
     std::list<CompleteEdge_t> edges = start -> getCompleteEdges(start);
-    while(!edges.empty())
+    if(edges.empty())
+    {
+        return std::list<CompleteEdge_t>();
+    }
+    while(true)
     {
         CompleteEdge_t edge = edges.front();
         edges.pop_front();
         while(edge.cost == 0)
         {
-            edge = edges.front();
-            edges.pop_front();
             if(edges.empty())
             {
                 return std::list<CompleteEdge_t>();
             }
+            edge = edges.front();
+            edges.pop_front();
         }
         if((visited.find(edge.destination -> getValue()) -> second).destination == nullptr)
         {
@@ -455,26 +454,15 @@ std::list<CompleteEdge_t> Graph_t::bfs(Node_t* start, Node_t* end)
             {
                 break;
             }
-            // this works but using edge.destination -> getCompleteEdges(edge.destination); doesn't?
-            std::cout << "1\n";
-            std::list<CompleteEdge_t> test = findNode(edge.destination->getValue()) -> getCompleteEdges(findNode(edge.destination->getValue()));
-            std::cout << "2\n";
-            std::cout << findNode(edge.destination -> getValue()) << ':' << edge.destination << '\n';
+            
             std::list<CompleteEdge_t> newEdges = edge.destination -> getCompleteEdges(edge.destination);
-            std::cout << "existing pointers\n";
-            for(auto it = newEdges.begin(); it != newEdges.end(); it++)
-            {
-                std::cout << it -> source -> getValue() << ':' << it -> destination -> getValue() << " -> " << it -> cost << '\n';
-            }
-            std::cout << "fresh pointers\n";
-            for(auto it = test.begin(); it != test.end(); it++)
-            {
-                std::cout << it -> source -> getValue() << ':' << it -> destination -> getValue() << " -> " << it -> cost << '\n';
-            }
             edges.splice(edges.end(), newEdges);
         }
+        if(edges.empty())
+        {
+            return std::list<CompleteEdge_t>();
+        }
     }
-    
     std::list<CompleteEdge_t> path;
     while(end -> getValue() != start -> getValue())
     {
@@ -482,7 +470,7 @@ std::list<CompleteEdge_t> Graph_t::bfs(Node_t* start, Node_t* end)
         path.push_front(edge);
         end = edge.source;
     }
-
+    
     return path;
 }
 
@@ -491,7 +479,10 @@ std::list<CompleteEdge_t> Graph_t::bfs(Node_t* start, Node_t* end)
 */
 void Graph_t::clear()
 {
-    nodes.clear();
+    for(auto it = nodes.begin(); it != nodes.end(); it++)
+    {
+        delete *it;
+    }
 }
 
 /*
@@ -501,7 +492,7 @@ void Graph_t::zeroizeEdges()
 {
     for(auto it = nodes.begin(); it != nodes.end(); it++)
     {
-        it -> zeroizeEdges();
+        (*it) -> zeroizeEdges();
     }
 }
 
@@ -511,10 +502,10 @@ void Graph_t::zeroizeEdges()
 int Graph_t::getHighestNode()
 {
     auto it = nodes.begin();
-    int max = it -> getValue();
+    int max = (*it) -> getValue();
     while(it != nodes.end())
     {
-        int i = it -> getValue();
+        int i = (*it) -> getValue();
         if(i > max)
         {
             max = i;
@@ -529,10 +520,10 @@ int Graph_t::getHighestNode()
 int Graph_t::getLowestNode()
 {
     auto it = nodes.begin();
-    int min = it -> getValue();
+    int min = (*it) -> getValue();
     while(it != nodes.end())
     {
-        int i = it -> getValue();
+        int i = (*it) -> getValue();
         if(i < min)
         {
             min = i;
@@ -549,9 +540,9 @@ Node_t* Graph_t::findNode(int value)
 {
     for(auto it = nodes.begin(); it != nodes.end(); it++)
     {
-        if(it -> getValue() == value)
+        if((*it) -> getValue() == value)
         {
-            return &*it;
+            return *it;
         }
     }
     return nullptr;
@@ -570,7 +561,7 @@ std::list<int> Graph_t::getVertices()
     std::list<int> values;
     for(auto it = nodes.begin(); it != nodes.end(); it++)
     {
-        values.push_back(it -> getValue());
+        values.push_back((*it) -> getValue());
     }
     return values;
 }
