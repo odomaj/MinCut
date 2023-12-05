@@ -84,7 +84,7 @@ bool Graph_t::deserialize(const std::string& graphvizString)
         oss << str << ' ';
     }
     std::string str = oss.str();
-    return generateVertexes(str) && generateEdges(str);
+    return generateVertices(str) && generateEdges(str);
 }
 
 /*
@@ -92,14 +92,26 @@ bool Graph_t::deserialize(const std::string& graphvizString)
     returns false if digraph string is not properly formatted, leads to incomplete graph
     returns true and generates all edges if digraph string is properly formatted
 */
-bool Graph_t::generateVertexes(const std::string& digraph)
+bool Graph_t::generateVertices(const std::string& digraph)
 {
     std::istringstream iss;
     iss.str(digraph);
     int node;
     while(!(iss >> node).fail())
     {
-        nodes.push_back(new Node_t(node));
+        bool exists = false;
+        for(auto it = nodes.begin(); it != nodes.end(); it++)
+        {
+            if((*it) -> getValue() == node)
+            {
+                exists = true;
+                break;
+            }
+        }
+        if(!exists)
+        {
+            nodes.push_back(new Node_t(node));
+        }
         while(iss.get() != ';')
         {
             if(iss.fail())
@@ -122,7 +134,7 @@ bool Graph_t::generateVertexes(const std::string& digraph)
 
 /*
     Generate edges a digraph
-    Call after generateVertexes
+    Call after generateVertices
     returns false if digraph string is not properly formatted, leads to incomplete graph
     returns true and generates all edges if digraph string is properly formatted
 */

@@ -62,7 +62,7 @@ class Graph_t
     int getFlow();
     private:
     std::list<Node_t*> nodes;
-    bool generateVertexes(const std::string& digraph);
+    bool generateVertices(const std::string& digraph);
     bool generateEdges(const std::string& digraph);
     bool addEdge(CompleteEdge_t edge);
     Node_t* findNode(int value);

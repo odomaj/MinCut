@@ -20,7 +20,6 @@ STCut_t Cut::findCut(Graph_t& graph)
     {
         if(!generateResidual())
         {
-            std::cout << "fuck\n";
             STCut_t cut;
             return cut;
         }
@@ -33,9 +32,7 @@ STCut_t Cut::findCut(Graph_t& graph)
     }
     STCut_t cut;
     cut.maxFlow = currentFlow -> getFlow();
-    std::cout << cut.maxFlow;
     cut.flow = currentFlow -> serialize();
-    std::cout << cut.flow;
     cut.cut = residual -> getReachable();
     return cut;
 }
