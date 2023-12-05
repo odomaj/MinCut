@@ -17,7 +17,6 @@ typedef struct
     int cost;
 } CompleteEdge_t;
 
-
 typedef struct
 {
     Node_t* node;

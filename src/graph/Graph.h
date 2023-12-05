@@ -31,11 +31,18 @@ typedef struct
     std::list<StaticEdge_t> edges;
 } StaticGraph_t;
 
+typedef struct
+{
+    std::list<int> reachable;
+    std::list<int> notReachable;
+} ReachableNodes_t;
+
 class Graph_t
 {
     public:
     Graph_t();
-    Graph_t(Graph_t& graph);
+    Graph_t(Graph_t* graph);
+    ~Graph_t();
     std::string serialize();
     bool deserialize(const std::string& graphvizString);
     void clear();
@@ -51,6 +58,8 @@ class Graph_t
     int getHighestNode();
     int getLowestNode();
     std::list<int> getVertices();
+    ReachableNodes_t getReachable();
+    int getFlow();
     private:
     std::list<Node_t*> nodes;
     bool generateVertexes(const std::string& digraph);

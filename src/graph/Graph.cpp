@@ -5,21 +5,26 @@
 
 Graph_t::Graph_t()
 {
-
+    
 }
 
-Graph_t::Graph_t(Graph_t& graph)
+Graph_t::Graph_t(Graph_t* graph)
 {
-    for(auto it = graph.nodes.begin(); it != graph.nodes.end(); it++)
+    
+    for(auto it = graph -> nodes.begin(); it != graph -> nodes.end(); it++)
     {
         nodes.push_back(new Node_t((*it) -> getValue()));
     }
-
-    std::list<StaticEdge_t> edges = graph.getEdges();
+    std::list<StaticEdge_t> edges = graph -> getEdges();
     for(auto it = edges.begin(); it != edges.end(); it++)
     {
         findNode(it -> source) -> addEdge(findNode(it -> destination), it -> cost);
     }
+}
+
+Graph_t::~Graph_t()
+{
+    clear();
 }
 
 /*
@@ -45,7 +50,7 @@ std::string Graph_t::serialize()
 */
 bool Graph_t::deserialize(const std::string& graphvizString)
 {
-    nodes.clear();
+    clear();
     std::istringstream iss;
     iss.str(graphvizString);
     while(!iss.fail())
@@ -479,10 +484,15 @@ std::list<CompleteEdge_t> Graph_t::bfs(Node_t* start, Node_t* end)
 */
 void Graph_t::clear()
 {
+    if(nodes.empty())
+    {
+        return;
+    }
     for(auto it = nodes.begin(); it != nodes.end(); it++)
     {
         delete *it;
     }
+    nodes.clear();
 }
 
 /*
@@ -505,7 +515,7 @@ int Graph_t::getHighestNode()
     int max = (*it) -> getValue();
     while(it != nodes.end())
     {
-        int i = (*it) -> getValue();
+        int i = (*it++) -> getValue();
         if(i > max)
         {
             max = i;
@@ -523,7 +533,7 @@ int Graph_t::getLowestNode()
     int min = (*it) -> getValue();
     while(it != nodes.end())
     {
-        int i = (*it) -> getValue();
+        int i = (*it++) -> getValue();
         if(i < min)
         {
             min = i;
@@ -564,4 +574,84 @@ std::list<int> Graph_t::getVertices()
         values.push_back((*it) -> getValue());
     }
     return values;
+}
+
+ReachableNodes_t Graph_t::getReachable()
+{
+    ReachableNodes_t output;
+    std::list<Edge_t> edges = findNode(getLowestNode()) -> getEdges();
+    
+    for(auto it = edges.begin(); it != edges.end(); it++)
+    {
+        output.reachable.push_back(it -> node -> getValue());
+    }
+    
+    while(true)
+    {
+        bool halt = false;
+        Edge_t edge;
+        edge.cost = 0;
+        while(edge.cost == 0)
+        {
+            if(edges.empty())
+            {
+                halt = true;
+                break;
+            }
+            edge = edges.front();
+            edges.pop_front();
+        }
+        if(halt)
+        {
+            break;
+        }
+        for(auto it = output.reachable.begin(); it != output.reachable.end(); it++)
+        {
+            if(*it == edge.node -> getValue())
+            {
+                halt = true;
+                break;
+            }
+        }
+        if(halt)
+        {
+            break;
+        }
+        output.reachable.push_back(edge.node -> getValue());
+        std::list<Edge_t> newEdges = edge.node -> getEdges();
+        edges.splice(edges.end(), newEdges);
+    }
+    
+    for(auto it1 = nodes.begin(); it1 != nodes.end(); it1++)
+    {
+        bool exists = false;
+        for(auto it2 = output.reachable.begin(); it2 != output.reachable.end(); it2++)
+        {
+            if((*it1) -> getValue() == *it2)
+            {
+                exists = true;
+                break;
+            }
+        }
+        if(!exists)
+        {
+            output.notReachable.push_back((*it1) -> getValue());
+        }
+    }
+
+    return output;
+}
+
+int Graph_t::getFlow()
+{
+    int flow = 0;
+    int min = getLowestNode();
+    Node_t* start = findNode(getLowestNode());
+    std::list<Edge_t> edges = start -> getEdges();
+    for(auto it = edges.begin(); it != edges.end(); it++)
+    {
+        flow += it -> cost;
+    }
+    return flow;
+
 }
