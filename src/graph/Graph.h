@@ -35,7 +35,7 @@ class Graph_t
 {
     public:
     Graph_t();
-    Graph_t(const Graph_t& graph);
+    Graph_t(Graph_t& graph);
     std::string serialize();
     bool deserialize(const std::string& graphvizString);
     void clear();

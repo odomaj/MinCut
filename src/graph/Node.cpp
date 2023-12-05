@@ -1,4 +1,5 @@
 #include "Node.h"
+#include <iostream>
 
 Node_t::Node_t()
 {
@@ -8,15 +9,6 @@ Node_t::Node_t()
 Node_t::Node_t(int value_)
 {
     value = value_;
-}
-
-Node_t::Node_t(Node_t* node)
-{
-    value = node -> value;
-    for(auto it = (node -> edges).begin(); it != (node -> edges).end(); it++)
-    {
-        edges.push_back(*it);
-    }
 }
 
 int Node_t::getValue()
@@ -57,6 +49,10 @@ bool Node_t::incrementEdge(Node_t* destination, int increment)
     {
         if(destination -> getValue() == it -> node -> getValue())
         {
+            if((it -> cost + increment) < 0)
+            {
+                return false;
+            }
             it -> cost += increment;
             return true;
         }
@@ -64,20 +60,22 @@ bool Node_t::incrementEdge(Node_t* destination, int increment)
     return false;
 }
 
-void Node_t::updateEdge(Node_t* destination, int cost)
+int Node_t::updateEdge(Node_t* destination, int cost)
 {
     for(auto it = edges.begin(); it != edges.end(); it++)
     {
         if(destination -> getValue() == it -> node -> getValue())
         {
+            int oldCost = it -> cost;
             it -> cost = cost;
-            return;
+            return oldCost;
         }
     }
     Edge_t edge;
     edge.node = destination;
     edge.cost = cost;
     edges.push_back(edge);
+    return 0;
 }
 
 std::list<Edge_t> Node_t::getEdges()

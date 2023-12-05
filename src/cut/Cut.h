@@ -17,7 +17,7 @@ class Cut
 {
     public:
     Cut();
-    STCut_t findCut(const Graph_t& graph);    
+    STCut_t findCut(Graph_t& graph);    
     private:
     Graph_t maxFlow;
     Graph_t currentFlow;
