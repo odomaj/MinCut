@@ -128,8 +128,34 @@ bool Graph_t::generateVertices(const std::string& digraph)
             maxValue = (*it) -> getValue();
         }
     }
-    nodes.push_back(new Node_t(maxValue + 1));
+    int max = findMaxEdge(digraph);
+    if(findNode(max) == nullptr)
+    {
+        nodes.push_back(new Node_t(max));
+
+    }
     return true;
+}
+
+int Graph_t::findMaxEdge(const std::string& digraph)
+{
+    int max;
+    std::string str;
+    int current;
+    std::istringstream iss;
+    iss.str(digraph);
+
+    while(!(iss >> str).fail())
+    {
+        iss >> str;
+        iss >> current;
+        if(current > max)
+        {
+            max = current;
+        }
+        iss >> str;
+    }
+    return max;
 }
 
 /*

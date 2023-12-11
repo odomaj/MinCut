@@ -64,6 +64,7 @@ class Graph_t
     std::list<Node_t*> nodes;
     bool generateVertices(const std::string& digraph);
     bool generateEdges(const std::string& digraph);
+    int findMaxEdge(const std::string& digraph);
     bool addEdge(CompleteEdge_t edge);
     Node_t* findNode(int value);
     std::list<CompleteEdge_t> bfs(Node_t* start, Node_t* end);

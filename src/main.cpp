@@ -1,6 +1,7 @@
 #include "io/IO.h"
 #include "cut/Cut.h"
 
+#include <fstream>
 #include <iostream>
 
 int main()
